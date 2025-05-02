@@ -36,7 +36,7 @@ class Game:
         # Логика обновления других игровых объектов
 
     def render(self):
-        self.screen.fill((0, 0, 0)) # Черный фон
+        self.screen.fill((0, 0, 255)) # Синий фон
         self.all_sprites.draw(self.screen) # Используем draw группы спрайтов
         pygame.display.flip()
 
