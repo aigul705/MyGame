@@ -24,7 +24,7 @@ pygame.init()
 pygame.mixer.init()
 
 # Загрузка и настройка фоновой музыки
-music_path = "C:/projects/mygame/Sprites/Player/Ghostrifter-Official-Resurgence(chosic.com).mp3"
+music_path = "Sprites/Player/music/Ghostrifter-Official-Resurgence(chosic.com).mp3"  # Используется и в меню, и в игре
 try:
     pygame.mixer.music.load(music_path)
     pygame.mixer.music.set_volume(0.5)  # Устанавливаем громкость (от 0.0 до 1.0)
@@ -37,7 +37,7 @@ screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
 pygame.display.set_caption("Главное Меню")
 
 # Загрузка фонового изображения
-background_image_path = "C:/projects/mygame/Sprites/Player/swamp-illustration-vector.png"
+background_image_path = "C:/projects/mygame/Sprites/Player/fon/swamp-illustration-vector.png"
 try:
     background_image = pygame.image.load(background_image_path).convert()
     # Масштабируем изображение до размеров экрана

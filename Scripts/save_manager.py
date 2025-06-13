@@ -11,15 +11,49 @@ SAVE_FILE_PATH = os.path.join(BASE_DIR, SAVE_FILE_NAME)
 def get_game_state(game_instance):
     """
     Извлекает состояние из экземпляра игры.
-    Пока только позиция игрока.
+    Теперь сохраняет: игрока, врагов, пули, людей, укушенных зомби.
     """
     if not game_instance or not hasattr(game_instance, 'player'):
-        return {} # Возвращаем пустой словарь, если что-то не так
+        return {}
 
+    # Игрок
     state = {
-        'player_pos': list(game_instance.player.rect.center)
-        # Добавьте сюда другие данные для сохранения
+        'player_pos': list(game_instance.player.rect.center),
     }
+    # Враги
+    state['enemies'] = [list(enemy.rect.center) for enemy in game_instance.enemy_manager.enemies]
+    # Пули
+    state['bullets'] = [
+        {
+            'pos': list(bullet.rect.center),
+            'velocity': list(bullet.velocity)
+        }
+        for bullet in game_instance.enemy_manager.bullets
+    ]
+    # Люди
+    state['people'] = [
+        {
+            'pos': list(person.rect.center),
+            'image_path': getattr(person, 'image_path', None),
+            'scale_factor': getattr(person, 'scale_factor', 0.1),
+            'creation_time': getattr(person, 'creation_time', 0),
+            'lifetime': getattr(person, 'lifetime', 5)
+        }
+        for person in game_instance.people_manager.people
+    ]
+    # Укушенные зомби
+    state['bitten_zombies'] = [
+        {
+            'x': z.rect.x,
+            'y': z.rect.y,
+            'width': z.rect.width,
+            'height': z.rect.height,
+            'creation_time': getattr(z, 'creation_time', 0),
+            'lifetime': getattr(z, 'lifetime', 5),
+            'image_path': getattr(z, 'image_path', None)
+        }
+        for z in game_instance.people_manager.bitten_zombies
+    ]
     return state
 
 def save_game(game_state):
@@ -56,26 +90,51 @@ def apply_loaded_state(game_instance, state_data):
     if not game_instance or not state_data:
         print("--- SM apply_loaded_state: Экземпляр игры или данные отсутствуют. ---")
         return
-
     try:
-        # Загружаем позицию игрока
+        # Игрок
         player_pos_list = state_data.get('player_pos')
         if player_pos_list and hasattr(game_instance, 'player'):
-             game_instance.player.rect.center = tuple(player_pos_list)
-             print(f"--- SM apply_loaded_state: Позиция игрока установлена в {game_instance.player.rect.center} ---")
-        else:
-             if hasattr(game_instance, 'player'):
-                 default_pos = (game_instance.screen_width // 2, game_instance.screen_height // 2)
-                 game_instance.player.rect.center = default_pos
-                 print(f"--- SM apply_loaded_state: Позиция игрока не найдена в данных или нет игрока, установлена по умолчанию: {default_pos} ---")
-             else:
-                  print("--- SM apply_loaded_state: Экземпляр игры не имеет атрибута player. ---")
-
-        # Загрузите здесь другие данные, применяя их к game_instance
-        # print(f"Состояние применено: игрок в {getattr(game_instance.player, 'rect', {}).get('center', 'N/A')}") # Старый print
-
+            game_instance.player.rect.center = tuple(player_pos_list)
+            print(f"--- SM apply_loaded_state: Позиция игрока установлена в {game_instance.player.rect.center} ---")
+        # Враги
+        game_instance.enemy_manager.enemies.empty()
+        for pos in state_data.get('enemies', []):
+            from Scripts.vrag import Enemy
+            enemy = Enemy(game_instance.screen_width, game_instance.screen_height, game_instance.player)
+            enemy.rect.center = tuple(pos)
+            game_instance.enemy_manager.enemies.add(enemy)
+        # Пули
+        game_instance.enemy_manager.bullets.empty()
+        for b in state_data.get('bullets', []):
+            from Scripts.vrag import Bullet
+            bullet = Bullet(tuple(b['pos']), (0, 0))
+            bullet.velocity = tuple(b['velocity'])
+            game_instance.enemy_manager.bullets.add(bullet)
+        # Люди
+        game_instance.people_manager.people.empty()
+        for pdata in state_data.get('people', []):
+            from Scripts.people import Person
+            person = Person(game_instance.screen_width, game_instance.screen_height)
+            person.rect.center = tuple(pdata['pos'])
+            if pdata.get('image_path'):
+                person.image_path = pdata['image_path']
+            if pdata.get('scale_factor'):
+                person.scale_factor = pdata['scale_factor']
+            if pdata.get('creation_time'):
+                person.creation_time = pdata['creation_time']
+            if pdata.get('lifetime'):
+                person.lifetime = pdata['lifetime']
+            game_instance.people_manager.people.add(person)
+        # Укушенные зомби
+        game_instance.people_manager.bitten_zombies.empty()
+        for zdata in state_data.get('bitten_zombies', []):
+            from Scripts.people import BittenZombie
+            z = BittenZombie(zdata['x'], zdata['y'], zdata['width'], zdata['height'], zdata['lifetime'], zdata.get('image_path'))
+            z.creation_time = zdata.get('creation_time', 0)
+            if zdata.get('image_path'):
+                z.image_path = zdata['image_path']
+            game_instance.people_manager.bitten_zombies.add(z)
     except Exception as e:
         print(f"--- SM apply_loaded_state: Ошибка применения загруженного состояния: {e}. ---")
-        # Можно добавить сброс к состоянию по умолчанию, если нужно
         if hasattr(game_instance, 'player'):
             game_instance.player.rect.center = (game_instance.screen_width // 2, game_instance.screen_height // 2) 
