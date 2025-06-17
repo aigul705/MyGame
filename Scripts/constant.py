@@ -11,6 +11,6 @@ GREEN = (0, 150, 0)
 LIGHT_GREEN = (0, 200, 0)
 
 # Button dimensions and spacing
-BUTTON_WIDTH = 200  # Переименовал для единообразия
-BUTTON_HEIGHT = 50 # Переименовал для единообразия
-BUTTON_SPACING = 20 # Переименовал для единообразия 
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 50
+BUTTON_SPACING = 20 

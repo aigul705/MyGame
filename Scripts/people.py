@@ -16,27 +16,34 @@ BITTEN_IMAGES = [
 ]
 
 class Person(pygame.sprite.Sprite):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, pos=None, image_path=None, scale_factor=None, creation_time=None, lifetime=None):
         super().__init__()
-        self.image_path, self.scale_factor = random.choice(PEOPLE_IMAGES)
+        if image_path is None or scale_factor is None:
+            self.image_path, self.scale_factor = random.choice(PEOPLE_IMAGES)
+        else:
+            self.image_path = image_path
+            self.scale_factor = scale_factor
         original_image = load_sprite(self.image_path, with_alpha=True)
         new_width = int(original_image.get_width() * self.scale_factor)
         new_height = int(original_image.get_height() * self.scale_factor)
         self.image = pygame.transform.scale(original_image, (new_width, new_height))
         self.rect = self.image.get_rect()
-        max_x = max(0, screen_width - self.rect.width)
-        max_y = max(0, screen_height - self.rect.height)
-        self.rect.x = random.randint(0, max_x)
-        self.rect.y = random.randint(0, max_y)
-        self.creation_time = time.time()
-        self.lifetime = 5  # 5 секунд
+        if pos is not None:
+            self.rect.center = tuple(pos)
+        else:
+            max_x = max(0, screen_width - self.rect.width)
+            max_y = max(0, screen_height - self.rect.height)
+            self.rect.x = random.randint(0, max_x)
+            self.rect.y = random.randint(0, max_y)
+        self.creation_time = creation_time if creation_time is not None else time.time()
+        self.lifetime = lifetime if lifetime is not None else 5
 
     def update(self, dt):
         if time.time() - self.creation_time > self.lifetime:
             self.kill()
 
 class BittenZombie(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, remaining_lifetime, image_path=None):
+    def __init__(self, x, y, width, height, remaining_lifetime, image_path=None, creation_time=None):
         super().__init__()
         if image_path is None:
             import random
@@ -49,7 +56,7 @@ class BittenZombie(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.creation_time = time.time()
+        self.creation_time = creation_time if creation_time is not None else time.time()
         self.lifetime = remaining_lifetime
 
     def update(self, dt):
@@ -63,7 +70,7 @@ class PeopleManager:
         self.people = pygame.sprite.Group()
         self.bitten_zombies = pygame.sprite.Group()
         self.last_wave_time = time.time()
-        self.wave_interval = 4  # 4 секунды
+        self.wave_interval = 4
 
     def update(self, dt):
         current_time = time.time()
@@ -84,7 +91,6 @@ class PeopleManager:
         self.bitten_zombies.draw(screen)
 
     def turn_person_to_bitten(self, person):
-        # Считаем оставшееся время жизни человека
         elapsed = time.time() - person.creation_time
         remaining_lifetime = max(0.1, person.lifetime - elapsed)
         bitten = BittenZombie(person.rect.x, person.rect.y, person.rect.width, person.rect.height, remaining_lifetime)

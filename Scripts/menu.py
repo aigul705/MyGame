@@ -14,10 +14,7 @@ from Scripts.button import Button
 from Scripts.game import Game
 from Scripts import constant as const # Импортируем константы
 
-# Комментарий про SAVE_FILE можно оставить или убрать
-# # Имя файла сохранения (должно совпадать с game.py)
-# # Файл будет в корневой папке проекта
-# # SAVE_FILE = os.path.join(parent_dir, "savegame.json")
+
 
 # Инициализация Pygame и микшера
 pygame.init()
@@ -37,7 +34,7 @@ screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
 pygame.display.set_caption("Главное Меню")
 
 # Загрузка фонового изображения
-background_image_path = "C:/projects/mygame/Sprites/Player/fon/swamp-illustration-vector.png"
+background_image_path = "Sprites/Player/fon/swamp-illustration-vector.png"
 try:
     background_image = pygame.image.load(background_image_path).convert()
     # Масштабируем изображение до размеров экрана
@@ -120,28 +117,17 @@ def main_menu_loop():
 
             if game_state == "menu":
                 if continue_button.is_clicked(event):
-                    print("--- MENU: Нажата кнопка 'Продолжить игру'. Загрузка... ---")
                     loaded_data = save_manager.load_game()
-                    print(f"--- MENU: save_manager.load_game() вернул: {loaded_data} ---")
                     if loaded_data:
-                        print("--- MENU: Загружены данные, создание Game(initial_state=...) ---")
                         game_instance = Game(initial_state=loaded_data)
                         game_state = "playing"
-                        print("--- MENU: Загруженная игра запускается. ---")
-                    else:
-                        print("--- MENU: Не удалось загрузить сохранение. Остаемся в меню. ---")
-                        # Можно добавить визуальное оповещение
 
                 if new_game_button.is_clicked(event):
-                    print("--- MENU: Нажата кнопка 'Новая игра' ---")
                     game_instance = Game()
                     game_state = "playing"
-                    print("--- MENU: Новая игра запускается. ---")
 
                 if story_button.is_clicked(event):
-                    print("--- MENU: Нажата кнопка 'Сюжет' ---")
                     game_state = "story"
-                    print("--- MENU: Отображение сюжета. ---")
 
         # --- Логика отрисовки ---
         if game_state == "menu":
@@ -193,7 +179,6 @@ def main_menu_loop():
             if game_instance:
                 # Запускаем цикл игры
                 game_instance.run()
-                print("--- MENU: Возврат из игрового цикла в меню. ---")
                 if not game_instance.is_running: # Проверяем, хочет ли игра выйти
                     running = False # Если игра сказала выйти, выходим из цикла меню
                     break
@@ -201,19 +186,17 @@ def main_menu_loop():
                 game_instance = None # Сбрасываем экземпляр
             else:
                 # Аварийный возврат в меню, если что-то пошло не так
-                print("--- MENU: Ошибка: game_state='playing', но game_instance is None. Возврат в меню. ---")
                 game_state = "menu"
 
         # Обновление экрана должно быть ВНЕ условных блоков отрисовки
         pygame.display.flip()
 
     # Завершение Pygame и выход из приложения происходят ПОСЛЕ цикла, в main.py
-    print("--- MENU: Выход из main_menu_loop. ---")
+    pygame.mixer.music.stop()  # Останавливаем музыку перед выходом
+    pygame.quit()
+    sys.exit() 
 
 # Этот блок будет выполняться, только если menu.py запускается напрямую (для тестирования)
 if __name__ == '__main__':
     main_menu_loop()
-    print("Выход из приложения (menu.py).")
-    pygame.mixer.music.stop()  # Останавливаем музыку перед выходом
-    pygame.quit()
-    sys.exit() 
+    print("Выход из приложения (menu.py).") 

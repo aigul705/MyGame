@@ -7,7 +7,7 @@ class Button:
         self.color = color
         self.hover_color = hover_color
         self.text_color = text_color
-        self.font = pygame.font.Font(None, font_size) # Используем стандартный шрифт Pygame
+        self.font = pygame.font.Font(None, font_size)
         self.is_hovered = False
 
     def draw(self, surface):

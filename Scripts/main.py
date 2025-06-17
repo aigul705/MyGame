@@ -11,12 +11,6 @@ sys.path.insert(0, parent_dir) # Вставляем путь в начало
 from Scripts.menu import main_menu_loop
 
 if __name__ == '__main__':
-   
-
-    print("--- MAIN: Запуск главного меню... ---")
-    main_menu_loop() # Запускаем цикл главного меню
-
-    # Завершение и выход 
-    print("--- MAIN: Выход из приложения. ---")
+    main_menu_loop()
     pygame.quit()
     sys.exit() 

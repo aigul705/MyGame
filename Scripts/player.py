@@ -25,7 +25,6 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.original_scaled_image
         self.facing_right = False
-
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
         self.velocity = pygame.Vector2(0, 0)
