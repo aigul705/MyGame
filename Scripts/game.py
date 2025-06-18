@@ -8,7 +8,7 @@ import Scripts.constant as const
 import os
 
 GAME_OVER_MUSIC = "Sprites/Player/music/game_over.mp3"
-KUS_SOUND = "Sprites/Player/music/kus.mp3"
+KUS_KUS = "Sprites/Player/music/kus.mp3"
 
 class Game:
     def __init__(self, initial_state=None):
@@ -17,7 +17,7 @@ class Game:
         self.screen_width = 1000
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("Моя Игра")
+        pygame.display.set_caption("Моя Игра)")
         self.clock = pygame.time.Clock()
         self.is_running = True
         self.is_game_over = False
@@ -38,26 +38,24 @@ class Game:
             const.GREEN, const.LIGHT_GREEN, const.WHITE
         )
 
-        self.kus_sound = pygame.mixer.Sound(KUS_SOUND)
+        self.kus_sound = pygame.mixer.Sound(KUS_KUS)
 
         try:
             self.background_image = pygame.image.load("Sprites/Player/fon/fb9a3e4224fcec0cb837fe9927dc2fde--dungeon-tiles-deathwatch.jpg").convert()
             self.background_image = pygame.transform.scale(self.background_image, (self.screen_width, self.screen_height))
         except Exception as e:
-            print(f"Не удалось загрузить фон: {e}")
             self.background_image = None
 
         try:
             self.zombie_image = pygame.image.load("Sprites/Player/fon/pngtree-cartoon-zombie-of-halloween-coming-out-of-the-broken-paper-png-image_13362557.png").convert_alpha()
             self.zombie_image = pygame.transform.smoothscale(self.zombie_image, (180, 180))
         except Exception as e:
-            print(f"Не удалось загрузить картинку зомби: {e}")
             self.zombie_image = None
 
         self.score = 0
 
         if initial_state:
-            save_manager.apply_loaded_state(self, initial_state)
+            save_manager.loaded_state(self, initial_state)
 
     def run(self):
         while self.is_running:
@@ -146,7 +144,7 @@ class Game:
             pygame.mixer.music.set_volume(0.5)
             pygame.mixer.music.play(-1)
         except Exception as e:
-            print(f"Ошибка при воспроизведении главной музыки: {e}")
+            print("Ошибка  главной музыки")
 
     def play_game_over_music(self):
         try:
@@ -155,10 +153,10 @@ class Game:
             pygame.mixer.music.set_volume(0.5)
             pygame.mixer.music.play()
         except Exception as e:
-            print(f"Ошибка при воспроизведении музыки Game Over: {e}")
+            print("Ошибка музыки Game Over")
 
 if __name__ == '__main__':
-    print("Этот файл не предназначен для прямого запуска. Запустите main.py")
+    print("ЗАПУСКАЙ ЧЕРЕЗ main.py!!!!!!")
 
 
 

@@ -1,17 +1,14 @@
-# Scripts/save_manager.py
 import json
 import os
 
-# Определяем путь к файлу сохранения относительно ЭТОГО файла
-# Поднимаемся на один уровень вверх (из Scripts в корень проекта)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SAVE_FILE_NAME = "savegame.json"
-SAVE_FILE_PATH = os.path.join(BASE_DIR, SAVE_FILE_NAME)
+base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+savefile = "savegame.json"
+save1 = os.path.join(base, savefile)
 
 def get_game_state(game_instance):
     """
     Извлекает состояние из экземпляра игры.
-    Теперь сохраняет: игрока, врагов, пули, людей, укушенных зомби.
+
     """
     if not game_instance or not hasattr(game_instance, 'player'):
         return {}
@@ -60,29 +57,27 @@ def get_game_state(game_instance):
 def save_game(game_state):
     """Сохраняет переданное состояние игры в файл."""
     if not game_state:
-        print("Ошибка сохранения: нет данных для сохранения.")
         return
     try:
-        with open(SAVE_FILE_PATH, 'w') as f:
+        with open(save1, 'w') as f:
             json.dump(game_state, f, indent=4)
     except Exception as e:
-        print(f"Ошибка сохранения игры в {SAVE_FILE_PATH}: {e}")
+        print("Ошибка в save")
 
 def load_game():
     """Загружает состояние игры из файла."""
-    if not os.path.exists(SAVE_FILE_PATH):
+    if not os.path.exists(save1):
         return None
 
     try:
-        with open(SAVE_FILE_PATH, 'r') as f:
+        with open(save1, 'r') as f:
             state_data = json.load(f)
         return state_data
     except Exception as e:
-        print(f"Ошибка загрузки состояния из {SAVE_FILE_PATH}: {e}")
         return None
 
-def apply_loaded_state(game_instance, state_data):
-    """Применяет загруженное состояние к экземпляру игры."""
+def loaded_state(game_instance, state_data):
+    """Применяет загруженное состояние к игре"""
     if not game_instance or not state_data:
         return
     try:
@@ -138,6 +133,5 @@ def apply_loaded_state(game_instance, state_data):
             )
             game_instance.people_manager.bitten_zombies.add(z)
     except Exception as e:
-        print(f"Ошибка применения загруженного состояния: {e}")
         if hasattr(game_instance, 'player'):
             game_instance.player.rect.center = (game_instance.screen_width // 2, game_instance.screen_height // 2) 

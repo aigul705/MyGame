@@ -21,11 +21,12 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y = random.randint(0, max_y)
         
         self.player = player
-        self.facing_right = True
+        self.facing_right = True #взгяд
         self.creation_time = time.time()
         self.lifetime = 3
 
     def update(self, dt):
+        """метод отображения 'взгляда' врага относительно положения игрока, уничтожение врага по истечению времени"""
         if self.player:
             if self.player.rect.centerx > self.rect.centerx and not self.facing_right:
                 self.image = pygame.transform.flip(self.original_image, True, False)
@@ -38,19 +39,21 @@ class Enemy(pygame.sprite.Sprite):
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, speed=200):
+        """ инициализация пуль, их скорость, вектор направления и тд"""
         super().__init__()
         self.image = pygame.Surface((10, 4), pygame.SRCALPHA)
         pygame.draw.rect(self.image, (255, 220, 0), (0, 0, 10, 4))
-        dx, dy = target_pos[0] - start_pos[0], target_pos[1] - start_pos[1]
+        dx, dy = target_pos[0] - start_pos[0], target_pos[1] - start_pos[1]#векторы
         angle = math.degrees(math.atan2(-dy, dx))
         self.image = pygame.transform.rotate(self.image, angle)
         self.rect = self.image.get_rect(center=start_pos)
-        length = math.hypot(dx, dy)
+        length = math.hypot(dx, dy)#типо гипотенуза
         if length == 0:
             length = 1
-        self.velocity = (dx / length * speed, dy / length * speed)
+        self.velocity = (dx / length * speed, dy / length * speed)#Умножение на speed задаёт нужную скорость движения
 
     def update(self, dt):
+        """ метод отображения движения пули с постоянной скоростью, уничтожение при выходе за экран"""
         self.rect.x += self.velocity[0] * dt
         self.rect.y += self.velocity[1] * dt
         if (self.rect.right < 0 or self.rect.left > 1200 or
@@ -69,6 +72,7 @@ class EnemyManager:
         self.wave_active = False
 
     def update(self, dt):
+        """ метод управления врагами 'волнами', их появлением """
         current_time = time.time()
         if not self.enemies and (current_time - self.last_wave_time >= self.wave_interval):
             self.spawn_wave()

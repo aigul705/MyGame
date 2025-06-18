@@ -1,76 +1,38 @@
 {
     "player_pos": [
-        317,
-        251
+        545,
+        307
     ],
-    "score": 11,
+    "score": 0,
     "enemies": [
         [
-            820,
-            446
-        ],
-        [
-            704,
-            529
-        ],
-        [
-            145,
-            164
+            447,
+            473
         ]
     ],
     "bullets": [
         {
             "pos": [
-                685,
-                400
+                529,
+                350
             ],
             "velocity": [
-                -182.03133972295166,
-                -82.85282951515512
-            ]
-        },
-        {
-            "pos": [
-                596,
-                438
-            ],
-            "velocity": [
-                -151.1378165579635,
-                -130.98610768356838
-            ]
-        },
-        {
-            "pos": [
-                281,
-                209
-            ],
-            "velocity": [
-                189.0658208094303,
-                65.2235801045633
+                101.67594527294777,
+                -172.22660117662582
             ]
         }
     ],
     "people": [
         {
             "pos": [
-                943,
-                337
+                418,
+                171
             ],
-            "image_path": "Player/people/4132257-middle.png",
-            "scale_factor": 0.07,
-            "creation_time": 1750169048.699342,
+            "image_path": "Player/people/3368686-middle.png",
+            "scale_factor": 0.15,
+            "creation_time": 1750265185.5907264,
             "lifetime": 5
         }
     ],
-    "bitten_zombies": [
-        {
-            "x": 510,
-            "y": 359,
-            "width": 75,
-            "height": 90,
-            "creation_time": 1750169050.3368714,
-            "lifetime": 3.3628454208374023,
-            "image_path": "Player/player_idle/d837ec867953a282721c18b50337ae38.png"
-        }
-    ]
+    "bitten_zombies": []
 }
