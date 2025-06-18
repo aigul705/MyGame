@@ -1,38 +1,14 @@
 {
     "player_pos": [
-        545,
-        307
+        358,
+        331
     ],
-    "score": 0,
+    "score": 1,
     "enemies": [
         [
-            447,
-            473
+            910,
+            245
         ]
     ],
-    "bullets": [
-        {
-            "pos": [
-                529,
-                350
-            ],
-            "velocity": [
-                101.67594527294777,
-                -172.22660117662582
-            ]
-        }
-    ],
-    "people": [
-        {
-            "pos": [
-                418,
-                171
-            ],
-            "image_path": "Player/people/3368686-middle.png",
-            "scale_factor": 0.15,
-            "creation_time": 1750265185.5907264,
-            "lifetime": 5
-        }
-    ],
-    "bitten_zombies": []
+    "bullets": []
 }

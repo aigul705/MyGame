@@ -28,30 +28,6 @@ def get_game_state(game_instance):
         }
         for bullet in game_instance.enemy_manager.bullets
     ]
-    # Люди
-    state['people'] = [
-        {
-            'pos': list(person.rect.center),
-            'image_path': getattr(person, 'image_path', None),
-            'scale_factor': getattr(person, 'scale_factor', 0.1),
-            'creation_time': getattr(person, 'creation_time', 0),
-            'lifetime': getattr(person, 'lifetime', 5)
-        }
-        for person in game_instance.people_manager.people
-    ]
-    # Укушенные зомби
-    state['bitten_zombies'] = [
-        {
-            'x': z.rect.x,
-            'y': z.rect.y,
-            'width': z.rect.width,
-            'height': z.rect.height,
-            'creation_time': getattr(z, 'creation_time', 0),
-            'lifetime': getattr(z, 'lifetime', 5),
-            'image_path': getattr(z, 'image_path', None)
-        }
-        for z in game_instance.people_manager.bitten_zombies
-    ]
     return state
 
 def save_game(game_state):
@@ -105,33 +81,6 @@ def loaded_state(game_instance, state_data):
             bullet = Bullet(tuple(b['pos']), (0, 0))
             bullet.velocity = tuple(b['velocity'])
             game_instance.enemy_manager.bullets.add(bullet)
-
-        # Люди
-        game_instance.people_manager.people.empty()
-        for pdata in state_data.get('people', []):
-            from Scripts.people import Person
-            person = Person(
-                game_instance.screen_width,
-                game_instance.screen_height,
-                pos=pdata.get('pos'),
-                image_path=pdata.get('image_path'),
-                scale_factor=pdata.get('scale_factor'),
-                creation_time=pdata.get('creation_time'),
-                lifetime=pdata.get('lifetime')
-            )
-            game_instance.people_manager.people.add(person)
-
-        # Укушенные зомби
-        game_instance.people_manager.bitten_zombies.empty()
-        for zdata in state_data.get('bitten_zombies', []):
-            from Scripts.people import BittenZombie
-            z = BittenZombie(
-                zdata['x'], zdata['y'], zdata['width'], zdata['height'],
-                zdata['lifetime'],
-                image_path=zdata.get('image_path'),
-                creation_time=zdata.get('creation_time', 0)
-            )
-            game_instance.people_manager.bitten_zombies.add(z)
     except Exception as e:
         if hasattr(game_instance, 'player'):
             game_instance.player.rect.center = (game_instance.screen_width // 2, game_instance.screen_height // 2) 
