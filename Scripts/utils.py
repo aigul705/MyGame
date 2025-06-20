@@ -9,18 +9,15 @@ def load_sprite(sprite_name, with_alpha=False):
     """Загружает спрайт из папки Sprites.
 
     Args:
-        sprite_name (str): Имя файла спрайта 
-        with_alpha (bool, optional): Загружать ли с прозрачностью По умолчанию False.
+        sprite_name: Имя файла спрайта 
+        with_alpha : Загружать ли с прозрачностью По умолчанию False.
 
     Returns:
-        pygame.Surface: Загруженный спрайт
+        pygame.Surface: Загруженный спрайт (изображение)
     """
     file_path = os.path.join(SPRITES_DIR, sprite_name)
-    try:
-        sprite = pygame.image.load(file_path)
-    except pygame.error as e:
-        raise SystemExit(e)
-
+    sprite = pygame.image.load(file_path)
+   
     if with_alpha:
         return sprite.convert_alpha()
     else:

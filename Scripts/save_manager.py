@@ -8,12 +8,14 @@ save1 = os.path.join(base, savefile)
 def get_game_state(game_instance):
     """
     Извлекает состояние из экземпляра игры.
+    args: game_instance - "объект" игры
+    return: координаты врагов, пуль, игрока + счёт
 
     """
     if not game_instance or not hasattr(game_instance, 'player'):
         return {}
 
-    # Игрок
+    # Игрок и счёт
     state = {
         'player_pos': list(game_instance.player.rect.center),
         'score': getattr(game_instance, 'score', 0),
@@ -31,9 +33,10 @@ def get_game_state(game_instance):
     return state
 
 def save_game(game_state):
-    """Сохраняет переданное состояние игры в файл."""
-    if not game_state:
-        return
+    """Сохраняет переданное состояние игры в файл.
+    args:game_state - словарь, содержащий данные игры (позиции игрока, врагов, пуль, счёт)
+    return: записаные данные в файл savegame"""
+
     try:
         with open(save1, 'w') as f:
             json.dump(game_state, f, indent=4)
@@ -41,46 +44,41 @@ def save_game(game_state):
         print("Ошибка в save")
 
 def load_game():
-    """Загружает состояние игры из файла."""
-    if not os.path.exists(save1):
-        return None
+    """Загружает состояние игры из файла.
+    return: даные из файла savegame"""
+    
+    with open(save1, 'r') as f:
+        state_data = json.load(f)
+    return state_data
 
-    try:
-        with open(save1, 'r') as f:
-            state_data = json.load(f)
-        return state_data
-    except Exception as e:
-        return None
 
 def loaded_state(game_instance, state_data):
-    """Применяет загруженное состояние к игре"""
-    if not game_instance or not state_data:
-        return
+    """Применяет загруженное состояние к игре
+    args: game_instance - объект игры
+          state_data - сохранённые данные из файла savegame
+    """
+
     try:
         # Игрок
         player_pos_list = state_data.get('player_pos')
-        if player_pos_list and hasattr(game_instance, 'player'):
-            game_instance.player.rect.center = tuple(player_pos_list)
+        game_instance.player.rect.center = tuple(player_pos_list)
 
-        # Восстанавливаем счёт
-        if 'score' in state_data:
-            game_instance.score = state_data['score']
+        # счёт
+        game_instance.score = state_data['score']
 
         # Враги
-        game_instance.enemy_manager.enemies.empty()
         for pos in state_data.get('enemies', []):
             from Scripts.vrag import Enemy
             enemy = Enemy(game_instance.screen_width, game_instance.screen_height, game_instance.player)
             enemy.rect.center = tuple(pos)
-            game_instance.enemy_manager.enemies.add(enemy)
+            game_instance.enemy_manager.enemies.add(enemy)#добавление в группу для дальнейших волн
 
         # Пули
-        game_instance.enemy_manager.bullets.empty()
         for b in state_data.get('bullets', []):
             from Scripts.vrag import Bullet
             bullet = Bullet(tuple(b['pos']), (0, 0))
             bullet.velocity = tuple(b['velocity'])
-            game_instance.enemy_manager.bullets.add(bullet)
+            game_instance.enemy_manager.bullets.add(bullet)#добавление в группу для дальнейших волн
     except Exception as e:
-        if hasattr(game_instance, 'player'):
-            game_instance.player.rect.center = (game_instance.screen_width // 2, game_instance.screen_height // 2) 
+        print("Проблема с сохранённым файлом(")
+       

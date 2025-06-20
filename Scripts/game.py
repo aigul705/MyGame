@@ -17,7 +17,7 @@ class Game:
         self.screen_width = 1000
         self.screen_height = 600
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("Моя Игра)")
+        pygame.display.set_caption("Моя Игра")
         self.clock = pygame.time.Clock()
         self.is_running = True
         self.is_game_over = False
@@ -40,18 +40,13 @@ class Game:
 
         self.kus_sound = pygame.mixer.Sound(KUS_KUS)
 
-        try:
-            self.background_image = pygame.image.load("Sprites/Player/fon/fb9a3e4224fcec0cb837fe9927dc2fde--dungeon-tiles-deathwatch.jpg").convert()
-            self.background_image = pygame.transform.scale(self.background_image, (self.screen_width, self.screen_height))
-        except Exception as e:
-            self.background_image = None
-
-        try:
-            self.zombie_image = pygame.image.load("Sprites/Player/fon/pngtree-cartoon-zombie-of-halloween-coming-out-of-the-broken-paper-png-image_13362557.png").convert_alpha()
-            self.zombie_image = pygame.transform.smoothscale(self.zombie_image, (180, 180))
-        except Exception as e:
-            self.zombie_image = None
-
+        
+        self.background_image = pygame.image.load("Sprites/Player/fon/fb9a3e4224fcec0cb837fe9927dc2fde--dungeon-tiles-deathwatch.jpg").convert()
+        self.background_image = pygame.transform.scale(self.background_image, (self.screen_width, self.screen_height))
+        
+        self.zombie_image = pygame.image.load("Sprites/Player/fon/pngtree-cartoon-zombie-of-halloween-coming-out-of-the-broken-paper-png-image_13362557.png").convert_alpha()
+        self.zombie_image = pygame.transform.smoothscale(self.zombie_image, (180, 180))
+        
         self.score = 0
 
         if initial_state:
@@ -65,13 +60,14 @@ class Game:
             if not self.is_running:
                 break
             if not self.is_game_over:
-                self.update(dt)
-                self.render()
-                self.check_collision()
+                self.update(dt)#обновляются спрайты
+                self.render()#отрисовка кадр
+                self.check_collision()#проверка столкновений
             else:
                 self.render_game_over()
 
     def handle_events(self):
+        """При закрытии окна игра сохраняет состояние и завершается"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 current_state = save_manager.get_game_state(self)
@@ -79,6 +75,7 @@ class Game:
                 self.is_running = False
                 return
             if self.is_game_over:
+                """Если игра завершена, проверяется наведение и клик по кнопке Сначала"""
                 mouse_pos = pygame.mouse.get_pos()
                 self.restart_button.check_hover(mouse_pos)
                 if self.restart_button.is_clicked(event):
@@ -92,17 +89,18 @@ class Game:
     def render(self):
         if self.background_image:
             self.screen.blit(self.background_image, (0, 0))
-        else:
-            self.screen.fill((0, 0, 0))
+
         score_font = pygame.font.SysFont(None, 40)
         score_surface = score_font.render(f"Счет: {self.score}", True, (255, 255, 255))
         self.screen.blit(score_surface, (15, 10))
+
         self.all_sprites.draw(self.screen)
         self.enemy_manager.draw(self.screen)
         self.people_manager.draw(self.screen)
         pygame.display.flip()
 
     def check_collision(self):
+        """проверка столкновений"""
         if pygame.sprite.spritecollideany(self.player, self.enemy_manager.enemies):
             self.is_game_over = True
             self.play_game_over_music()
@@ -129,6 +127,7 @@ class Game:
         pygame.display.flip()
 
     def restart_game(self):
+        """перезапуск игры"""
         self.is_game_over = False
         self.player = Player(self.screen_width // 2, self.screen_height // 2)
         self.all_sprites = pygame.sprite.Group()
@@ -139,24 +138,19 @@ class Game:
         self.play_main_music()
 
     def play_main_music(self):
-        try:
-            pygame.mixer.music.load("Sprites/Player/music/Ghostrifter-Official-Resurgence(chosic.com).mp3")
-            pygame.mixer.music.set_volume(0.5)
-            pygame.mixer.music.play(-1)
-        except Exception as e:
-            print("Ошибка  главной музыки")
+        pygame.mixer.music.load("Sprites/Player/music/Ghostrifter-Official-Resurgence(chosic.com).mp3")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
+
 
     def play_game_over_music(self):
-        try:
-            pygame.mixer.music.stop()
-            pygame.mixer.music.load(GAME_OVER_MUSIC)
-            pygame.mixer.music.set_volume(0.5)
-            pygame.mixer.music.play()
-        except Exception as e:
-            print("Ошибка музыки Game Over")
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load(GAME_OVER_MUSIC)
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play()
 
-if __name__ == '__main__':
-    print("ЗАПУСКАЙ ЧЕРЕЗ main.py!!!!!!")
+
+
 
 
 

@@ -1,31 +1,23 @@
 import pygame
 import sys
 import os
-
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-
-sys.path.insert(0, parent_dir)
-
-
 import Scripts.save_manager as save_manager
 from Scripts.button import Button
 from Scripts.game import Game
-from Scripts import constant as const 
+from Scripts import constant as const
 
-
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
 
 pygame.init()
 pygame.mixer.init()
 
 music_path = "Sprites/Player/music/Ghostrifter-Official-Resurgence(chosic.com).mp3"  # Используется и в меню, и в игре
-try:
-    pygame.mixer.music.load(music_path)
-    pygame.mixer.music.set_volume(0.5)  # громкость 
-    pygame.mixer.music.play(-1)  #  бесконечное повторение
-except pygame.error as e:
-    print("чТО-ТО С музыкой")
+
+pygame.mixer.music.load(music_path)
+pygame.mixer.music.set_volume(0.5)  # громкость 
+pygame.mixer.music.play(-1)  #  бесконечное повторение
 
 
 screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
@@ -33,41 +25,34 @@ pygame.display.set_caption("Главное Меню")
 
 
 background_image_path = "Sprites/Player/fon/swamp-illustration-vector.png"
-try:
-    background_image = pygame.image.load(background_image_path).convert()
-    # Масштабируем изображение до размеров экрана
-    background_image = pygame.transform.scale(background_image, (const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
-except pygame.error as e:
-    background_image = None 
+
+background_image = pygame.image.load(background_image_path).convert()
+# Масштабируем изображение до размеров экрана
+background_image = pygame.transform.scale(background_image, (const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
+
 
 # Создание кнопок 
 total_height = const.BUTTON_HEIGHT * 3 + const.BUTTON_SPACING * 2 # Увеличиваем высоту 
 start_y = (const.SCREEN_HEIGHT - total_height) // 2
 
 continue_button = Button(
-    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2,
-    start_y,
-    const.BUTTON_WIDTH,
-    const.BUTTON_HEIGHT,
+    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2, start_y,
+    const.BUTTON_WIDTH,const.BUTTON_HEIGHT,
     "Продолжить игру",
     const.GRAY, const.LIGHT_GRAY, const.BLACK
 )
 
 new_game_button = Button(
-    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2,
-    start_y + const.BUTTON_HEIGHT + const.BUTTON_SPACING,
-    const.BUTTON_WIDTH,
-    const.BUTTON_HEIGHT,
+    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2, start_y + const.BUTTON_HEIGHT + const.BUTTON_SPACING,
+    const.BUTTON_WIDTH, const.BUTTON_HEIGHT,
     "Новая игра",
     const.GREEN, const.LIGHT_GREEN, const.WHITE
 )
 
 # "Сюжет"
 story_button = Button(
-    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2,
-    start_y + (const.BUTTON_HEIGHT + const.BUTTON_SPACING) * 2, 
-    const.BUTTON_WIDTH,
-    const.BUTTON_HEIGHT,
+    (const.SCREEN_WIDTH - const.BUTTON_WIDTH) // 2, start_y + (const.BUTTON_HEIGHT + const.BUTTON_SPACING) * 2, 
+    const.BUTTON_WIDTH, const.BUTTON_HEIGHT,
     "Сюжет",
     const.GRAY, const.LIGHT_GRAY, const.BLACK 
 )
@@ -103,7 +88,7 @@ def main_menu_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # Если игра запущена, она сохранится сама при выходе из своего цикла
-                # Если мы в меню, просто выходим(вроде)
+                # Если мы в меню, просто выходим
                 running = False
 
             if event.type == pygame.KEYDOWN:
@@ -130,27 +115,27 @@ def main_menu_loop():
                 screen.blit(background_image, (0, 0))
             else:
                 screen.fill(const.WHITE) # Резервный фон
-            # Обновляем состояние наведения кнопок меню
+            # Обновляем состояние кнопок меню
             continue_button.check_hover(mouse_pos)
             new_game_button.check_hover(mouse_pos)
             story_button.check_hover(mouse_pos) 
 
-            # Рисуем кнопки меню
+            # кнопки меню
             continue_button.draw(screen)
             new_game_button.draw(screen)
             story_button.draw(screen) 
 
         elif game_state == "story":
-            # Отрисовка экрана сюжета
+            # экран сюжета
             if background_image:
                 screen.blit(background_image, (0, 0))
             else:
                 screen.fill(const.WHITE)
 
-            # Настройка шрифта для текста сюжета
+            # шрифт для текста сюжета
             font = pygame.font.SysFont(None, 36)
             
-            # Разбиваем текст на строки
+            # текст на строки
             lines = STORY_TEXT.strip().split('\n')
             line_height = 40  # Расстояние между строками
             
@@ -158,7 +143,7 @@ def main_menu_loop():
             total_text_height = len(lines) * line_height
             start_y = (const.SCREEN_HEIGHT - total_text_height) // 2
             
-            # Отрисовываем каждую строку текста
+            # Отрисовка строк текста
             for i, line in enumerate(lines):
                 text_surface = font.render(line, True, const.WHITE)  
                 text_rect = text_surface.get_rect(center=(const.SCREEN_WIDTH // 2, start_y + i * line_height))
@@ -166,7 +151,7 @@ def main_menu_loop():
 
             
             esc_font = pygame.font.SysFont(None, 24)
-            esc_text = esc_font.render("Нажмите ESC для возврата в меню", True, const.WHITE)
+            esc_text = esc_font.render("ESC для возврата в меню", True, const.WHITE)
             esc_rect = esc_text.get_rect(center=(const.SCREEN_WIDTH // 2, const.SCREEN_HEIGHT - 50))
             screen.blit(esc_text, esc_rect)
 
@@ -175,7 +160,7 @@ def main_menu_loop():
                 # Запускаем цикл игры
                 game_instance.run()
                 if not game_instance.is_running: # Проверяем, хочет ли игра выйти
-                    running = False # Если игра сказала выйти, выходим из цикла меню
+                    running = False 
                     break
                 game_state = "menu" # Всегда возвращаемся в меню
                 game_instance = None # Сбрасываем экземпляр
@@ -185,7 +170,6 @@ def main_menu_loop():
 
         pygame.display.flip()
 
-    # Завершение Pygame и выход из приложения происходят ПОСЛЕ цикла, в main.py
-    pygame.mixer.music.stop()  # Останавливаем музыку перед выходом
+    pygame.mixer.music.stop()  
     pygame.quit()
     sys.exit() 

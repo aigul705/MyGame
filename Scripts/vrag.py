@@ -5,7 +5,9 @@ from Scripts.utils import load_sprite
 import math
 
 class Enemy(pygame.sprite.Sprite):
+    """тут враги"""
     def __init__(self, screen_width, screen_height, player):
+        """инициализация врага: картинка, размеры, время жизни, коорд, спам"""
         super().__init__()
         original_image = load_sprite("Player/vrag/9829a9e2541f7d093f6b57cef05c5902.png", with_alpha=True)
         scale_factor = 0.1
@@ -38,6 +40,7 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
 class Bullet(pygame.sprite.Sprite):
+    """тут оружие врагов"""
     def __init__(self, start_pos, target_pos, speed=200):
         """ инициализация пуль, их скорость, вектор направления и тд"""
         super().__init__()
@@ -47,13 +50,14 @@ class Bullet(pygame.sprite.Sprite):
         angle = math.degrees(math.atan2(-dy, dx))
         self.image = pygame.transform.rotate(self.image, angle)
         self.rect = self.image.get_rect(center=start_pos)
-        length = math.hypot(dx, dy)#типо гипотенуза
+        length = math.hypot(dx, dy)#типо гипотенуза(длина вектора)
         if length == 0:
             length = 1
-        self.velocity = (dx / length * speed, dy / length * speed)#Умножение на speed задаёт нужную скорость движения
+        self.velocity = (dx / length * speed, dy / length * speed)#Умножение на speed задаёт нужную скорость движения(нормализированный вектор скорости)
 
     def update(self, dt):
-        """ метод отображения движения пули с постоянной скоростью, уничтожение при выходе за экран"""
+        """ метод отображения движения пули с постоянной скоростью, уничтожение при выходе за экран
+        args: dt - время, прошедшее с предыдущего кадра"""
         self.rect.x += self.velocity[0] * dt
         self.rect.y += self.velocity[1] * dt
         if (self.rect.right < 0 or self.rect.left > 1200 or
@@ -61,6 +65,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 class EnemyManager:
+    """тут всё зло"""
     def __init__(self, screen_width, screen_height, player):
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -71,15 +76,6 @@ class EnemyManager:
         self.wave_interval = 5
         self.wave_active = False
 
-    def update(self, dt):
-        """ метод управления врагами 'волнами', их появлением """
-        current_time = time.time()
-        if not self.enemies and (current_time - self.last_wave_time >= self.wave_interval):
-            self.spawn_wave()
-            self.last_wave_time = current_time
-        self.enemies.update(dt)
-        self.bullets.update(dt)
-
     def spawn_wave(self):
         num_enemies = random.randint(1, 5)
         for _ in range(num_enemies):
@@ -87,6 +83,16 @@ class EnemyManager:
             self.enemies.add(enemy)
             bullet = Bullet(enemy.rect.center, self.player.rect.center)
             self.bullets.add(bullet)
+
+    def update(self, dt):
+        """ метод управления врагами 'волнами', их появлением """
+        current_time = time.time()
+        if not self.enemies and (current_time - self.last_wave_time >= self.wave_interval):
+            self.spawn_wave()
+            self.last_wave_time = current_time
+        self.enemies.update(dt)#обновление
+        self.bullets.update(dt)
+
 
     def draw(self, screen):
         self.enemies.draw(screen)
